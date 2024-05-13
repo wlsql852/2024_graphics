@@ -33,20 +33,30 @@ void glm_vec_test() {
   float dot;
   
   // TODO 1)
+  x=glm::vec3(3,5,7);
   std::cout << "x = " << x << std::endl; 
 
   // TODO 2)
-  std::cout << "y = " << y << std::endl; 
+  y=x;
+  std::cout << "y = "<< y << std::endl; 
 
   // TODO 3)
+  y=x+y;
   std::cout << "y += x" << std::endl;
   std::cout << "y => " << y << std::endl;
   std::cout << "x => " << x << std::endl;
 
   // TODO 4)
+  //dot product : 내적벡터
+  // dot = x.x*y.x+x.y*y.y+x.z*y.z;
+  dot = glm::dot(x,y);
   std::cout << "dot(x,y) => " << dot << std::endl;
 
   // TODO 5)
+  //cross product : 외적벡터
+  x=glm::vec3(1,0,0);
+  y=glm::vec3(0,1,0);
+  z=glm::cross(x,y);
   std::cout << "reset x as [1, 0, 0]" << std::endl;
   std::cout << "reset y as [0, 1, 0]" << std::endl;
   std::cout << "z = cross(x, y)" << std::endl;
@@ -63,15 +73,22 @@ void glm_mat_test() {
   glm::mat4 B;
 
   // TODO 6) construct identity matrix
+  A=glm::mat4(1);
   std::cout << A << std::endl;
 
   // TODO 7)
-  // Notice: The matrix is column major
-
+  // Notice: The matrix is column major => 행이 아닌 열을 기준으로 써야함
+  A=glm::mat4(
+    1,2,3,0,
+    2,1,-2,0,
+    -1,0,1,0,
+    -1,2,4,1
+  );
   std::cout << "A = " << std::endl;
   std::cout << A << std::endl;  
 
   // TODO 8)
+  B=glm::transpose(A);
   std::cout << "B = A^T" << std::endl;
   std::cout << "B = " << std::endl;
   std::cout << B << std::endl;
@@ -102,12 +119,19 @@ void glm_transform_test() {
   glm::mat4 mat_Scale;
   glm::mat4 mat_Rotate;
   glm::mat4 mat_LookAt;
-  glm::mat4 mat_Ortho;
-  glm::mat4 mat_Frustum;
-  glm::mat4 mat_Perspective;
+  glm::mat4 mat_Ortho;  //직교투영행렬
+  glm::mat4 mat_Frustum;  //원근투영행렬1(절두체 행렬)
+  glm::mat4 mat_Perspective;  //원근투영행렬2
   
   // TODO 9)
-
+  //회전변환과 마지막 원근투영행렬이 틀림
+  mat_Translate = glm::translate(glm::mat4(1.0f),glm::vec3(1.0f,-1.0f,2.0f));
+  mat_Rotate = glm::rotate(glm::mat4(1.0f),glm::radians(90.0f),glm::vec3(1.0f,2.0f,-1.0f));
+  mat_Scale = glm::scale(glm::mat4(1.0f),glm::vec3(2.0f,1.0f,1.5f));
+  mat_LookAt = glm::lookAt(glm::vec3(0.0f,0.0f,-5.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f));
+  mat_Ortho = glm::ortho(1.0f,-1.0f,1.0f,-1.0f,1.0f,-1.0f);
+  mat_Frustum = glm::frustum(-0.1f,0.1f,-0.1f,0.1f,0.1f,1000.0f);
+  mat_Perspective = glm::perspective(glm::radians(60.0f),1.0f,0.001f,10000.0f);
   // DO NOT EDIT below this line
   std::cout << "Translation matrix" << std::endl;
   std::cout << mat_Translate << std::endl;

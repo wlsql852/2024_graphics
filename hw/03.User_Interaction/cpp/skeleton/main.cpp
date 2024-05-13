@@ -131,7 +131,12 @@ void compose_imgui_frame()
     ImGui::Begin("콘트롤(control)");
 
     // TODO
-    ImGui::SliderFloat("translate", &g_vec_model_translate[0], -3.0f, 3.0f);
+    // translate
+    ImGui::SliderFloat3("translate", glm::value_ptr(g_vec_model_translate), -3.0f, 3.0f);
+    //rotate
+    ImGui::gizmo3D("rotate", g_quat_model_rotation /*, size,  mode */);
+    //scale
+    ImGui::SliderFloat3("scale", glm::value_ptr(g_vec_model_scale), -3.0f, 3.0f);
 
     ImGui::End();
   }
@@ -181,12 +186,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
   // mode right
   if (key == GLFW_KEY_L && action == GLFW_PRESS)
     g_vec_model_translate[0] += 0.1f;
+  // move down
+  if (key == GLFW_KEY_J && action == GLFW_PRESS) 
+    g_vec_model_translate[1] -= 0.1f;
+  // move up
+  if (key == GLFW_KEY_K && action == GLFW_PRESS)
+    g_vec_model_translate[1] += 0.1f;
   
   // TODO
 
-  // scale
+  // scale up
   if (key == GLFW_KEY_EQUAL && action == GLFW_PRESS)
     g_vec_model_scale += 0.1f;
+  //scale down
+  if (key == GLFW_KEY_MINUS && action == GLFW_PRESS)
+    g_vec_model_scale -= 0.1f;
   
   // TODO
 }
@@ -314,7 +328,16 @@ void set_transform()
   g_mat_proj = glm::perspective(glm::radians(g_fovy), g_aspect, 0.001f, 1000.f);
   
   // TODO: erase the following line and write your codes to properly set g_mat_model as T*R*S
-  g_mat_model = glm::translate(g_vec_model_translate);
+  // 이동 변환 행렬 생성
+  glm::mat4 translate_matrix = glm::translate(g_vec_model_translate);
+
+  // 스케일 변환 행렬 생성
+  glm::mat4 scale_matrix = glm::scale(g_vec_model_scale);
+  // 회전변환 행렬 생성
+  glm::mat4 rotate_matrix = mat4_cast(g_quat_model_rotation);
+
+  // 모델 변환 행렬 생성: 먼저 스케일 적용 후 이동 적용
+  g_mat_model = translate_matrix * rotate_matrix * scale_matrix;
 }
 
 
@@ -358,8 +381,9 @@ void init_scene()
   g_vec_model_translate = glm::vec3(0.0);
   g_vec_model_scale = glm::vec3(1.f);
 
+
   // TODO: initialize quaternion for model rotation
-  // g_quat_model_rotation = ...
+  g_quat_model_rotation = glm::quat(1.f, 0.f, 0.f, 0.f);
 
   g_fovy = 60.0f;
   g_aspect = 1.0f;
