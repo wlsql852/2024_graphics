@@ -161,12 +161,14 @@ void compose_imgui_frame()
       float fovy = g_camera.fovy();
       ImGui::SliderFloat("fovy (deg)", &fovy, 10.f, 160.f);
       // TODO: set camera fovy
+      g_camera.set_fovy(fovy);
     }
     else
     {
       float ortho_scale = g_camera.ortho_scale();
       ImGui::SliderFloat("ortho zoom", &ortho_scale, 0.1f, 10.f);
       // TODO: set camera ortho_scale
+      g_camera.set_ortho_scale(ortho_scale);
     }
     ImGui::NewLine();
 
@@ -176,9 +178,12 @@ void compose_imgui_frame()
     glm::quat   quat_cam;
     glm::vec3   vec_cam_pos;
 
-    ImGui::SliderFloat3("Tranlsate", glm::value_ptr(vec_cam_pos), -10.0f, 10.0f);
-    ImGui::gizmo3D("Rotation", quat_cam);
+    g_camera.get_pose(quat_cam,vec_cam_pos);
 
+    ImGui::SliderFloat3("Tranlsate", glm::value_ptr(vec_cam_pos), -10.0f, 10.0f);
+    g_camera.set_pose(quat_cam,vec_cam_pos);
+    ImGui::gizmo3D("Rotation", quat_cam);
+    g_camera.set_rotation(quat_cam);
     ImGui::End();
   }
 
@@ -241,6 +246,22 @@ void compose_imgui_frame()
 void scroll_callback(GLFWwindow* window, double x, double y)
 {
   // TODO
+  if (g_camera.mode() == Camera::kPerspective)
+    {
+      float fovy = g_camera.fovy();
+      fovy -= y; // Zoom in/out
+      //clamp : 값이 주어진 범위 밖에 있을 때, 해당 값을 범위 내의 가장 가까운 값으로 조정
+      fovy = glm::clamp(fovy, 10.0f, 160.0f);
+      g_camera.set_fovy(fovy);
+    }
+    else
+    {
+      float ortho_scale = g_camera.ortho_scale();
+      ortho_scale -= y * 0.1f; // Zoom in/out
+      ortho_scale = glm::clamp(ortho_scale, 0.1f, 10.0f); // Clamp the ortho_scale value
+      g_camera.set_ortho_scale(ortho_scale);
+    }
+  
 }
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -265,6 +286,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     g_vec_model_scale -= 0.1f;
 
   // TODO: update camera extrinsic parameter with key-inputs
+  if (key == GLFW_KEY_D && action == GLFW_PRESS)
+    g_camera.move_right(0.1f);
+  if (key == GLFW_KEY_A && action == GLFW_PRESS)
+    g_camera.move_left(0.1f);
+  if (key == GLFW_KEY_S && action == GLFW_PRESS)
+    g_camera.move_forward(0.1f);
+  if (key == GLFW_KEY_W && action == GLFW_PRESS)
+    g_camera.move_backward(0.1f);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -482,6 +511,7 @@ int main(void)
   glfwSetKeyCallback(window, key_callback);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   // TODO: register scroll_callback function
+  glfwSetScrollCallback(window, scroll_callback);
 
 
   init_scene();
