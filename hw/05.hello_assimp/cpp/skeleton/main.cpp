@@ -496,10 +496,14 @@ void render_scene()
 
   // set transform
   const Camera& camera = g_cameras[g_cam_select_idx];
+  // mat_PVM = Object::get_model_matrix();  //여기 고쳐야함
 
   // TODO : set transform using the current camera
   mat_view = glm::mat4(1.0f); // <- TODO
   mat_proj = glm::mat4(1.0f); // <- TODO
+
+
+  
 
   // 특정 쉐이더 프로그램 사용
   glUseProgram(program);
