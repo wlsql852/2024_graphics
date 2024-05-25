@@ -496,22 +496,30 @@ void render_scene()
 
   // set transform
   const Camera& camera = g_cameras[g_cam_select_idx];
-  // mat_PVM = Object::get_model_matrix();  //여기 고쳐야함
 
   // TODO : set transform using the current camera
-  mat_view = glm::mat4(1.0f); // <- TODO
-  mat_proj = glm::mat4(1.0f); // <- TODO
+  mat_view = camera.get_view_matrix(); // <- TODO
+  mat_proj = camera.get_projection_matrix(); // <- TODO
 
 
   
 
-  // 특정 쉐이더 프로그램 사용
+  // 특정 쉐이더 프로그램 사용 - 학습자료07번 21p 참고
   glUseProgram(program);
 
   for (std::size_t i = 0; i < g_objects.size(); ++i)
   {
     // TODO : draw each object
+    Object& object = g_objects[i]; // 각 객체를 가져오기
+    mat_model = object.get_model_matrix();   //객체의 모델 행렬
+
+    mat_PVM = mat_proj*mat_view*mat_model;   //pvm 행렬 계산
+    glUniformMatrix4fv(loc_u_PVM, 1, GL_FALSE, glm::value_ptr(mat_PVM));
+
+    // 객체 그리기
+    object.draw(loc_a_position, loc_a_color);
   }
+
 
   // 쉐이더 프로그램 사용해제
   glUseProgram(0);
