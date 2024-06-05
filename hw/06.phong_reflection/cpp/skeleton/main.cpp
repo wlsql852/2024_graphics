@@ -545,21 +545,6 @@ void init_shader_program()
   // TODO: get locations of the GPU uniform/attribute variables 
   //       for implementing Phong reflection model
 
-  loc_u_view_matrix = glGetUniformLocation(program, "u_view_matrix");
-  loc_u_model_matrix = glGetUniformLocation(program, "u_model_matrix");
-  loc_u_normal_matrix = glGetUniformLocation(program, "u_normal_matrix");
-  loc_u_camera_position = glGetUniformLocation(program, "u_camera_position");
-  
-  loc_u_light_position = glGetUniformLocation(program, "u_light_position");
-  loc_u_light_ambient = glGetUniformLocation(program, "u_light_ambient");
-  loc_u_light_diffuse = glGetUniformLocation(program, "u_light_diffuse");
-  loc_u_light_specular = glGetUniformLocation(program, "u_light_specular");
-
-  loc_u_obj_ambient = glGetUniformLocation(program, "u_obj_ambient");
-  loc_u_obj_diffuse = glGetUniformLocation(program, "u_obj_diffuse");
-  loc_u_obj_specular = glGetUniformLocation(program, "u_obj_specular");
-  loc_u_obj_shininess = glGetUniformLocation(program, "u_obj_shininess");
-
 }
 
 void render_object()
@@ -575,7 +560,6 @@ void render_object()
   glUseProgram(program);
 
   // TODO : send uniform for camera & light to GPU
-  //glUniform3fv(loc_u_camera_position, 1 ,GL_FALSE, glm::value_ptr(camera.get_position()));
 
   for (std::size_t i = 0; i < g_models.size(); ++i)
   {
