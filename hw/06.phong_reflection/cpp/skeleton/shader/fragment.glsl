@@ -42,5 +42,6 @@ vec3 directional_light()
 
 void main()
 {
-	gl_FragColor = vec4(v_color, 1.0f);
+	vec3 result = directional_light();
+	gl_FragColor = vec4(result, 1.0f);
 }
