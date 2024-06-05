@@ -20,7 +20,7 @@ uniform mat4 u_view_matrix;
 vec3 directional_light() 
 {
   vec3 color = vec3(0.0);
-  vec3 normal_wc   = normalize(u_normal_wc);   //n
+  vec3 normal_wc   = normalize(v_normal_wc);   //n
   vec3 light_dir = normalize(u_light_position);  //l
 
   // ambient
@@ -31,7 +31,7 @@ vec3 directional_light()
   color += (ndotl * u_light_diffuse * u_obj_diffuse);   //ndotl * Ld * Kd
 
   // specular
-  vec3 view_dir = normalize(u_camera_position - position_wc);  /v
+  vec3 view_dir = normalize(u_camera_position - v_position_wc);  //v
   vec3 reflect_dir = reflect(-light_dir, normal_wc);   //r
 
   float rdotv = max(dot(view_dir, reflect_dir), 0.0);  //v.r
