@@ -35,7 +35,12 @@ void Mesh::set_gl_position_buffer_()
     std::vector<glm::vec3>  tv_positions;       // per triangle-vertex 3D position (size = 3 x #triangles)
     
     // TODO: for each triangle, set tv_positions
-
+    for (unsigned int i = 0; i < pmesh_->mNumVertices; ++i)
+    {
+        aiVector3D vertex = pmesh_->mVertices[i];
+        glm::vec3 position(vertex.x, vertex.y, vertex.z);
+        tv_positions.push_back(position);
+    }
     glBindBuffer(GL_ARRAY_BUFFER, position_buffer_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*tv_positions.size(), &tv_positions[0], GL_STATIC_DRAW);
 }
@@ -47,7 +52,12 @@ void Mesh::set_gl_color_buffer_(unsigned int cs_idx)
     std::vector<glm::vec3>  tv_colors;       // per triangle-vertex 3D position (size = 3 x #triangles)
 
     // TODO: for each triangle, set tv_colors
-
+    for (unsigned int i = 0; i < pmesh_->mNumVertices; ++i)
+    {
+        aiColor4D color = pmesh_->mColors[cs_idx][i];
+        glm::vec3 colorVec(color.r, color.g, color.b);
+        tv_colors.push_back(colorVec);
+    }
     glBindBuffer(GL_ARRAY_BUFFER, color_buffer_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*tv_colors.size(), &tv_colors[0], GL_STATIC_DRAW);
 
