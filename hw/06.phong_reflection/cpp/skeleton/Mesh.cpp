@@ -80,6 +80,26 @@ void Mesh::set_gl_normal_buffer_(ShadingType shading_type)
     //       add_up to tv_flat_normals & v_smooth_normals
     tv_flat_normals.resize(tv_indices_.size());
 
+    for (unsigned int i = 0; i < tv_indices_.size(); i += 3) {
+        unsigned int idx0 = tv_indices_[i];
+        unsigned int idx1 = tv_indices_[i + 1];
+        unsigned int idx2 = tv_indices_[i + 2];
+
+        glm::vec3 v0 = glm::vec3(pmesh_->mVertices[idx0].x, pmesh_->mVertices[idx0].y, pmesh_->mVertices[idx0].z);
+        glm::vec3 v1 = glm::vec3(pmesh_->mVertices[idx1].x, pmesh_->mVertices[idx1].y, pmesh_->mVertices[idx1].z);
+        glm::vec3 v2 = glm::vec3(pmesh_->mVertices[idx2].x, pmesh_->mVertices[idx2].y, pmesh_->mVertices[idx2].z);
+
+        glm::vec3 normal = glm::normalize(glm::cross(v1 - v0, v2 - v0));
+
+        tv_flat_normals[i] = normal;
+        tv_flat_normals[i + 1] = normal;
+        tv_flat_normals[i + 2] = normal;
+
+        v_smooth_normals[idx0] += normal;
+        v_smooth_normals[idx1] += normal;
+        v_smooth_normals[idx2] += normal;
+    }
+
     // normalize v_smooth_normals
     for (std::size_t i = 0; i < v_smooth_normals.size(); ++i)
         v_smooth_normals[i] = glm::normalize(v_smooth_normals[i]);
@@ -89,7 +109,11 @@ void Mesh::set_gl_normal_buffer_(ShadingType shading_type)
         memcpy(&v_smooth_normals[0], &pmesh_->mNormals[0], sizeof(pmesh_->mNormals[0])*pmesh_->mNumVertices);
 
     // TODO: set tv_smooth_normals from v_smooth_normals
+    tv_smooth_normals.resize(tv_indices_.size());
 
+    for (unsigned int i = 0; i < tv_indices_.size(); ++i) {
+        tv_smooth_normals[i] = v_smooth_normals[tv_indices_[i]];
+    }
     glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_);
     if (shading_type == kSmooth)
     {
@@ -116,14 +140,23 @@ void Mesh::draw(int loc_a_position, int loc_a_normal)
     //          glBindBuffer() with position_buffer_
     //          glEnableVertexAttribArray() for loc_a_position  
     //          glVertexAttribPointer() by reusing GPU data in loc_a_position
-    //
+    glBindBuffer(GL_ARRAY_BUFFER, position_buffer_);
+    glEnableVertexAttribArray(loc_a_position);
+    glVertexAttribPointer(loc_a_position, 3, GL_FLOAT, GL_FALSE, 0, 0);
     //          glBindBuffer() with normal_buffer_
     //          glEnableVertexAttribArray() for loc_a_normal  
     //          glVertexAttribPointer() by reusing GPU data in loc_a_normal
-    //
+    // 정규 버퍼를 바인딩합니다.
+    glBindBuffer(GL_ARRAY_BUFFER, normal_buffer_);
+    glEnableVertexAttribArray(loc_a_normal);
+    glVertexAttribPointer(loc_a_normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
     //          glDrawArrays(GL_TRIANGLES, ...)
-    //
+    // 메시의 삼각형을 그립니다.
+    glDrawArrays(GL_TRIANGLES, 0, tv_indices_.size());
     //          glDisableVertexAttribArray() for loc_a_position & loc_a_normal
+    // 사용이 끝난 후에는 정점 배열을 비활성화합니다.
+    glDisableVertexAttribArray(loc_a_position);
+    glDisableVertexAttribArray(loc_a_normal);
 }
     
 void Mesh::print_info()

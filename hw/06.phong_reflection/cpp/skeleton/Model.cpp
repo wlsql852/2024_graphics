@@ -24,6 +24,9 @@ void Model::draw(int loc_a_position, int loc_a_normal, int loc_u_ambient, int lo
         // call glUniform3fv(...) 
         //      with loc_u_ambient/diffuse/specular
         //      to send mesh.material.ambient/diffuse/specular data to the GPU side
+       
+       // glUniform3fv(loc_u_ambient, 1, glm::value_ptr(mesh.get_meterial().ambient));
+        
         // call glUniform1f(...) 
         //      with loc_u_shininess
         //      to send mesh.material.shininess
