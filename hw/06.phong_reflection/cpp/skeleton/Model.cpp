@@ -25,12 +25,14 @@ void Model::draw(int loc_a_position, int loc_a_normal, int loc_u_ambient, int lo
         //      with loc_u_ambient/diffuse/specular
         //      to send mesh.material.ambient/diffuse/specular data to the GPU side
        
-       // glUniform3fv(loc_u_ambient, 1, glm::value_ptr(mesh.get_meterial().ambient));
+       glUniform3fv(loc_u_ambient, 1, glm::value_ptr(mesh.material.ambient));
+       glUniform3fv(loc_u_diffuse, 1, glm::value_ptr(mesh.material.diffuse));
+       glUniform3fv(loc_u_specular, 1, glm::value_ptr(mesh.material.specular));
         
         // call glUniform1f(...) 
         //      with loc_u_shininess
         //      to send mesh.material.shininess
-
+        glUniform1f(loc_u_shininess, mesh.material.shininess);
         mesh.draw(loc_a_position, loc_a_normal);
     }
 }
