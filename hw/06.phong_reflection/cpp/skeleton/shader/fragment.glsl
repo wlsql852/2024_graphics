@@ -3,6 +3,7 @@
 // for phong shading
 varying vec3 v_position_wc;
 varying vec3 v_normal_wc;  //n
+// varying vec3 v_color;
 
 uniform vec3 u_light_position;  
 uniform vec3 u_light_ambient;   //La
@@ -43,5 +44,6 @@ vec3 directional_light()
 void main()
 {
 	vec3 result = directional_light();
+  // result *=v_color;
 	gl_FragColor = vec4(result, 1.0f);
 }
