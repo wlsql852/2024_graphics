@@ -596,17 +596,8 @@ void render_object()
     glUniformMatrix3fv(loc_u_normal_matrix, 1, GL_FALSE, glm::value_ptr(mat_normal));
     glUniformMatrix4fv(loc_u_PVM, 1, GL_FALSE, glm::value_ptr(mat_PVM));
 
-    for (const auto& mesh : model.meshes) {
-        const auto& material = mesh.material;
-        glUniform3fv(loc_u_obj_ambient, 1, glm::value_ptr(material.ambient));
-        glUniform3fv(loc_u_obj_diffuse, 1, glm::value_ptr(material.diffuse));
-        glUniform3fv(loc_u_obj_specular, 1, glm::value_ptr(material.specular));
-        glUniform1f(loc_u_obj_shininess, material.shininess);
-        
-      model.draw(loc_a_position, loc_a_normal, loc_u_obj_ambient, loc_u_obj_diffuse, loc_u_obj_specular, loc_u_obj_shininess);
-    }
+    model.draw(loc_a_position, loc_a_normal, loc_u_obj_ambient, loc_u_obj_diffuse, loc_u_obj_specular, loc_u_obj_shininess);
   }
-
   // 쉐이더 프로그램 사용해제
   glUseProgram(0);
 }
